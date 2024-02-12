@@ -4,7 +4,7 @@ import random
 from button import Button
 from label import Label
 from screen import ScreenHandler
-from utils import SCREEN_WIDTH, SCREEN_HEIGHT, BACKDROUND_COLOR, button_png_path
+from utils import SCREEN_WIDTH, SCREEN_HEIGHT, BACKDROUND_COLOR
 from file_handler import FileHandler
 
 pygame.init()
