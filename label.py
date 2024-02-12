@@ -1,0 +1,21 @@
+import pygame
+from utils import LABEL_COLOR, BLUE_LABEL
+
+class Label:
+    
+    def __init__(self, name, font, font_size, coordinates):
+        self.font = pygame.font.SysFont(font, font_size)
+        self.name = self.font.render(name,True, LABEL_COLOR)
+        self.name_text = name
+        self.color = LABEL_COLOR
+        self.coordinates = coordinates
+        
+    def display_label(self, screen):
+        screen.blit(self.name, self.coordinates)
+        
+    def change_theme(self,color):
+        if color == "blue":
+            self.color = BLUE_LABEL
+        elif color == "pink":
+            self.color = LABEL_COLOR
+        self.name = self.font.render(self.name_text, True, self.color)
