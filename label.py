@@ -11,7 +11,7 @@ class Label:
         self.coordinates = coordinates
         
     def set_text(self, new_text):
-        self.name = self.font.render(new_text,True, LABEL_COLOR)
+        self.name = self.font.render(new_text,True, self.color)
         
     def display_label(self, screen):
         screen.blit(self.name, self.coordinates)
