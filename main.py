@@ -7,6 +7,7 @@ from screen import ScreenHandler
 from utils import (SCREEN_WIDTH, SCREEN_HEIGHT, BACKDROUND_COLOR,
                    easy_files, medium_files, hard_files)
 from file_handler import FileHandler
+from game_logic import GameLogic
 
 pygame.init()
 
@@ -52,6 +53,9 @@ game_mode_buttons = (back_to_new_game,)
 menu_state = "main"
 theme = "pink"
 
+# game logic handler
+game_logic_handler = None
+
 def draw_playing_field(files):
     screen_handler.clear_screen(theme)
     for button in game_mode_buttons:
@@ -60,8 +64,9 @@ def draw_playing_field(files):
     file_number = random.randint(0, 2)
     file_handler = FileHandler(files[file_number])
     file_handler.open_file()
-    file_handler.draw_rows(screen_handler.screen, theme)
+    text_boxes = file_handler.draw_rows(screen_handler.screen, theme)
     file_handler.close_file()
+    return GameLogic(text_boxes, file_handler)
 
 pygame.display.update()
 
@@ -73,14 +78,17 @@ while run:
         for button in main_menu_buttons:
             button.display_button(screen_handler.screen)
 
+    # check if in new game menu
     if menu_state == "new game":
         new_game_menu_title.display_label(screen_handler.screen)
         for button in new_game_buttons:
             button.display_button(screen_handler.screen)
 
+    #check if in game mode
     if menu_state == "game mode":
         for button in game_mode_buttons:
             button.display_button(screen_handler.screen)
+        
             
     # check events
     for event in pygame.event.get():
@@ -95,7 +103,6 @@ while run:
             if menu_state == "main":
                 for button in main_menu_buttons:
                     button.change_background(button.collide_point(position))
-                
                 
             # check if in new game menu
             elif menu_state == "new game":
@@ -121,7 +128,7 @@ while run:
                     for button in new_game_buttons:
                         button.change_theme(theme)
                 # if continue game button pressed
-                elif continue_button.collide_point(position):
+                elif continue_button.collide_point(position): # TODO
                     pass
                 #if change theme pressed
                 elif themes_button.collide_point(position):
@@ -143,10 +150,10 @@ while run:
                                 mm_button.change_theme(theme)
                         pygame.display.set_caption("Pink Sudoku")
                 # if statistics pressed                
-                elif statistics_button.collide_point(position):
+                elif statistics_button.collide_point(position): # TODO
                     print("statistics_button clicked")
                 # if picture sdoku pressed
-                elif pic_sudoku_button.collide_point(position):
+                elif pic_sudoku_button.collide_point(position): # TODO
                     print("pic_sudoku_button clicked")
                     
             # if in new game menu
@@ -161,27 +168,33 @@ while run:
                 # if easy button pressed
                 elif easy_mode.collide_point(position):
                     menu_state = "game mode"
-                    draw_playing_field(easy_files)
+                    game_logic_handler = draw_playing_field(easy_files)
                 # if medium button pressed
                 elif medium_mode.collide_point(position):
                     menu_state = "game mode"
-                    draw_playing_field(medium_files)
+                    game_logic_handler = draw_playing_field(medium_files)
                 # if hard button pressed
                 elif hard_mode.collide_point(position):
                     menu_state = "game mode"
-                    draw_playing_field(hard_files)
+                    game_logic_handler = draw_playing_field(hard_files)
                     
-            # if in easy game mode 
+            # if in game mode 
             elif menu_state == "game mode":
-                menu_state = "new game"
-                screen_handler.clear_screen(theme)
-                new_game_menu_title.change_theme(theme)
-                for button in new_game_buttons:
-                    button.change_theme(theme)
+                # if back is pressed
+                if back_to_new_game.collide_point(position):
+                    menu_state = "new game"
+                    screen_handler.clear_screen(theme)
+                    new_game_menu_title.change_theme(theme)
+                    for button in new_game_buttons:
+                        button.change_theme(theme)
                 
+                game_logic_handler.activate_box(position)
                 
-                    
+        elif event.type == pygame.KEYDOWN:
+            if menu_state == "game mode":
+                game_logic_handler.handle_input(event, screen_handler.screen, theme)
+                        
+                
     pygame.time.delay(100)
-
 
 pygame.quit()

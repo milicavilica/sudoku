@@ -25,7 +25,8 @@ class FileHandler:
             rows.append(row)
         return rows
     
-    def _draw_borders(self, screen, color):
+    def draw_borders(self, screen, theme):
+        color = LABEL_COLOR if theme == "pink" else BLUE_LABEL
         for i in range(3):
             for j in range(3):
                 rect = pygame.Rect(52+j*132, 52+i*132, 132, 132)
@@ -42,6 +43,7 @@ class FileHandler:
     def draw_rows(self, screen, theme):
         rows = self._get_rows()
         color = LABEL_COLOR if theme == "pink" else BLUE_LABEL
+        text_boxes = []
         
         for i in range(len(rows)):
             for j in range(len(rows[i])):
@@ -51,6 +53,7 @@ class FileHandler:
                     #draw a text box
                     t_box = TextBox(coordinates)
                     t_box.draw(screen, theme)
+                    text_boxes.append(t_box)
                 else:
                     #draw a button
                     b_box = Button(element, "Oswald", 40, (15, 10), coordinates, (44, 44))
@@ -60,6 +63,7 @@ class FileHandler:
                     pygame.draw.rect(screen, color , rect, 1)
                     pygame.display.update()
                     
-        self._draw_borders(screen, color)
+        self.draw_borders(screen, theme)
+        return text_boxes
                     
         
