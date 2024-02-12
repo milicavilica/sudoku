@@ -4,22 +4,26 @@ from utils import (LABEL_COLOR, BUTTON_BG_COLOR, BUTTON_HOVERED,
 
 class Button:
     
-    def __init__(self, name, font, font_size, text_coord, button_coord, dimensions):
+    def __init__(self, name, font, font_size, button_coord, dimensions):
         self.background_color = BUTTON_BG_COLOR
         self.background_hovered = BUTTON_HOVERED
         self.name = name
         self.font = pygame.font.SysFont(font, font_size)
         self.text = self.font.render(name, True, LABEL_COLOR)
-        self.text_coordinates = text_coord
         self.button_coordinates = button_coord
         self.dimensions = dimensions
         self.button = pygame.Surface(dimensions)
         self.button.fill(self.background_color)
         
     def display_button(self, screen):
-        self.button.blit(self.text, self.text_coordinates)
+        text_rect = self.text.get_rect(center=self.button.get_rect().center)
+        self.button.blit(self.text, text_rect)
         screen.blit(self.button, self.button_coordinates)
         pygame.display.update()
+
+    def set_text(self, new_name):
+        color = LABEL_COLOR if self.background_hovered == BUTTON_HOVERED else BLUE_LABEL
+        self.text = self.font.render(new_name, True, color)
     
     def change_background(self, hovered):
         if hovered:

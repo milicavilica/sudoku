@@ -56,7 +56,7 @@ class FileHandler:
                     text_boxes.append(t_box)
                 else:
                     #draw a button
-                    b_box = Button(element, "Oswald", 40, (15, 10), coordinates, (44, 44))
+                    b_box = Button(element, "Oswald", 40, coordinates, (44, 44))
                     b_box.change_theme(theme)
                     b_box.display_button(screen)
                     rect = pygame.Rect(coordinates[0], coordinates[1], 44, 44)

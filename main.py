@@ -14,39 +14,42 @@ pygame.init()
 
 # screen
 screen_handler = ScreenHandler(SCREEN_WIDTH, SCREEN_HEIGHT, "Pink Sudoku", BACKDROUND_COLOR)
+clock = pygame.time.Clock()
+seconds,minutes = (0,0)
+timer = Label("", "Oswald", 25, (52, 20))
 
 # main menu
 # main title
 main_title = Label("SUDOKU", "Oswald", 100, (105, 110))
 main_title.display_label(screen_handler.screen)
 # new game button
-new_game_button = Button("New Game", "Oswald", 50, (50, 8), (115, 230), (270, 50))
+new_game_button = Button("New Game", "Oswald", 50, (115, 230), (270, 50))
 new_game_button.display_button(screen_handler.screen)
 # continue game
-continue_button = Button("Continue Game", "Oswald", 50, (5, 8), (115, 300), (270, 50))
+continue_button = Button("Continue Game", "Oswald", 50, (115, 300), (270, 50))
 continue_button.display_button(screen_handler.screen)
 # themes button
-themes_button = Button("Change theme", "Oswald", 50, (16, 8), (115, 370), (270, 50))
+themes_button = Button("Change theme", "Oswald", 50, (115, 370), (270, 50))
 themes_button.display_button(screen_handler.screen)
 # statistics button
-statistics_button = Button("Statistics", "Oswald", 50, (55, 8), (115, 440), (270, 50))
+statistics_button = Button("Statistics", "Oswald", 50, (115, 440), (270, 50))
 statistics_button.display_button(screen_handler.screen)
 # picture sudoku button
-pic_sudoku_button = Button("Picture Sudoku", "Oswald", 50, (7, 8), (115, 510), (270, 50))
+pic_sudoku_button = Button("Picture Sudoku", "Oswald", 50, (115, 510), (270, 50))
 pic_sudoku_button.display_button(screen_handler.screen)
 main_menu_buttons = (new_game_button, continue_button, themes_button, statistics_button, pic_sudoku_button)
 
 
 # new game menu
 new_game_menu_title = Label("NEW GAME", "Oswald", 90, (85, 110))
-easy_mode = Button("Easy", "Oswald", 50, (90, 13), (115, 250), (270, 60))
-medium_mode = Button("Medium", "Oswald", 50, (70, 13), (115, 330), (270, 60))
-hard_mode = Button("Hard", "Oswald", 50, (90, 13), (115, 410), (270, 60))
-back_button = Button("Back to main", "Oswald", 50, (8, 5), (140, 530), (230,40))
+easy_mode = Button("Easy", "Oswald", 50, (115, 250), (270, 60))
+medium_mode = Button("Medium", "Oswald", 50, (115, 330), (270, 60))
+hard_mode = Button("Hard", "Oswald", 50, (115, 410), (270, 60))
+back_button = Button("Back to main", "Oswald", 50, (140, 530), (230,40))
 new_game_buttons = (easy_mode, medium_mode, hard_mode, back_button)
 
 # game mode 
-back_to_new_game = Button("Back", "Oswald", 35, (5, 8), (52, 508), (70, 40))
+back_to_new_game = Button("Back", "Oswald", 35, (52, 508), (70, 40))
 game_mode_buttons = (back_to_new_game,)
 
 # game modes
@@ -88,8 +91,23 @@ while run:
     if menu_state == "game mode":
         for button in game_mode_buttons:
             button.display_button(screen_handler.screen)
+         
+        elapsed_time = clock.tick(60)  # This will return the time passed in milliseconds
+        seconds += elapsed_time / 1000  # Convert milliseconds to seconds
+        if seconds >= 60:
+            minutes += 1
+            seconds = 0
         
-            
+        screen_handler.clear_rect(theme, (60, 20), timer.coordinates)
+        
+        timer_text = f'{int(minutes):02d}:{int(seconds):02d}'.format(minutes, seconds)
+        timer.change_theme(theme)
+        timer.set_text(timer_text)
+        timer.display_label(screen_handler.screen)
+        pygame.display.update()
+    else:
+        seconds = 0
+        minutes = 0
     # check events
     for event in pygame.event.get():
         #check if exit button is pressed
@@ -187,6 +205,7 @@ while run:
                     new_game_menu_title.change_theme(theme)
                     for button in new_game_buttons:
                         button.change_theme(theme)
+                    
                 
                 game_logic_handler.activate_box(position)
                 

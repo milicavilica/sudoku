@@ -20,11 +20,14 @@ class ScreenHandler:
             self.screen.fill(self.background_color)
             self._initialized = True
         
+    def clear_rect(self, color, dimensions, coordinates):
+        self.background_color = BACKDROUND_COLOR if color == "pink" else BLUE_BG_COLOR
+        left, top = coordinates
+        width, height = dimensions
+        self.screen.fill(self.background_color, pygame.Rect(left, top, width, height))
+
     def clear_screen(self, color):
-        if color == "pink":
-            self.background_color = BACKDROUND_COLOR
-        elif color == "blue":
-            self.background_color = BLUE_BG_COLOR
+        self.background_color = BACKDROUND_COLOR if color == "pink" else BLUE_BG_COLOR
         self.screen.fill(self.background_color)
         pygame.display.update()
 

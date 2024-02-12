@@ -10,6 +10,9 @@ class Label:
         self.color = LABEL_COLOR
         self.coordinates = coordinates
         
+    def set_text(self, new_text):
+        self.name = self.font.render(new_text,True, LABEL_COLOR)
+        
     def display_label(self, screen):
         screen.blit(self.name, self.coordinates)
         

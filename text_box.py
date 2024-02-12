@@ -16,11 +16,10 @@ class TextBox:
     def draw(self, screen, theme):
         if theme == "pink":
             color = BUTTON_BG_COLOR
-            label_color = LABEL_COLOR
         else:
             color = BLUE_BUTTON_BG_COLOR
-            label_color = BLUE_LABEL
         
+        label_color = (0,0,0)
         pygame.draw.rect(screen, color, self.box)
         if self.text:
             font = pygame.font.SysFont("Oswald", 40)
