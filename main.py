@@ -49,8 +49,11 @@ back_button = Button("Back to main", "Oswald", 50, (140, 530), (230,40))
 new_game_buttons = (easy_mode, medium_mode, hard_mode, back_button)
 
 # game mode 
+notes_on = False
 back_to_new_game = Button("Back", "Oswald", 35, (52, 508), (70, 40))
-game_mode_buttons = (back_to_new_game,)
+notes = Button("Notes On", "Oswald", 35, (240, 508), (120, 40))
+hint = Button("Hint", "Oswald", 35, (380, 508), (70,40))
+game_mode_buttons = (back_to_new_game, notes, hint)
 
 # game modes
 menu_state = "main"
@@ -89,6 +92,10 @@ while run:
 
     #check if in game mode
     if menu_state == "game mode":
+        if notes_on:
+            notes.set_text("Notes Off")
+        else: 
+            notes.set_text("Notes On")
         for button in game_mode_buttons:
             button.display_button(screen_handler.screen)
          
@@ -131,6 +138,8 @@ while run:
             elif menu_state == "game mode":
                 for button in game_mode_buttons:
                     button.change_background(button.collide_point(position))
+                
+                
 
         # check if a button is pressed
         elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -198,6 +207,8 @@ while run:
                     
             # if in game mode 
             elif menu_state == "game mode":
+                game_logic_handler.activate_box(position, theme, screen_handler.screen)
+                
                 # if back is pressed
                 if back_to_new_game.collide_point(position):
                     menu_state = "new game"
@@ -205,14 +216,14 @@ while run:
                     new_game_menu_title.change_theme(theme)
                     for button in new_game_buttons:
                         button.change_theme(theme)
-                    
-                
-                game_logic_handler.activate_box(position)
-                
+                # if notes button is pressed
+                elif notes.collide_point(position):
+                    notes_on = not notes_on
+                    game_logic_handler.notes_switch(notes_on)
+        # check if a key has been pressed
         elif event.type == pygame.KEYDOWN:
             if menu_state == "game mode":
                 game_logic_handler.handle_input(event, screen_handler.screen, theme)
-                        
                 
     pygame.time.delay(100)
 
