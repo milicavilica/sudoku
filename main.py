@@ -4,7 +4,8 @@ import random
 from button import Button
 from label import Label
 from screen import ScreenHandler
-from utils import SCREEN_WIDTH, SCREEN_HEIGHT, BACKDROUND_COLOR
+from utils import (SCREEN_WIDTH, SCREEN_HEIGHT, BACKDROUND_COLOR,
+                   easy_files, medium_files, hard_files)
 from file_handler import FileHandler
 
 pygame.init()
@@ -43,14 +44,24 @@ hard_mode = Button("Hard", "Oswald", 50, (90, 13), (115, 410), (270, 60))
 back_button = Button("Back to main", "Oswald", 50, (8, 5), (140, 530), (230,40))
 new_game_buttons = (easy_mode, medium_mode, hard_mode, back_button)
 
-# easy game mode 
+# game mode 
 back_to_new_game = Button("Back", "Oswald", 35, (5, 8), (52, 508), (70, 40))
-easy_mode_buttons = (back_to_new_game,)
+game_mode_buttons = (back_to_new_game,)
 
 # game modes
 menu_state = "main"
 theme = "pink"
 
+def draw_playing_field(files):
+    screen_handler.clear_screen(theme)
+    for button in game_mode_buttons:
+        button.change_theme(theme)
+    
+    file_number = random.randint(0, 2)
+    file_handler = FileHandler(files[file_number])
+    file_handler.open_file()
+    file_handler.draw_rows(screen_handler.screen, theme)
+    file_handler.close_file()
 
 pygame.display.update()
 
@@ -67,8 +78,8 @@ while run:
         for button in new_game_buttons:
             button.display_button(screen_handler.screen)
 
-    if menu_state == "easy mode":
-        for button in easy_mode_buttons:
+    if menu_state == "game mode":
+        for button in game_mode_buttons:
             button.display_button(screen_handler.screen)
             
     # check events
@@ -91,9 +102,9 @@ while run:
                 for button in new_game_buttons:
                     button.change_background(button.collide_point(position))
             
-            # check if in easy mode
-            elif menu_state == "easy mode":
-                for button in easy_mode_buttons:
+            # check if in game mode
+            elif menu_state == "game mode":
+                for button in game_mode_buttons:
                     button.change_background(button.collide_point(position))
 
         # check if a button is pressed
@@ -109,6 +120,9 @@ while run:
                     new_game_menu_title.change_theme(theme)
                     for button in new_game_buttons:
                         button.change_theme(theme)
+                # if continue game button pressed
+                elif continue_button.collide_point(position):
+                    pass
                 #if change theme pressed
                 elif themes_button.collide_point(position):
                     if theme == "pink":
@@ -146,24 +160,19 @@ while run:
                         button.change_theme(theme)
                 # if easy button pressed
                 elif easy_mode.collide_point(position):
-                    menu_state = "easy mode"
-                    screen_handler.clear_screen(theme)
-                    for button in easy_mode_buttons:
-                        button.change_theme(theme)
-    
-                    files = ("sudoku easy 1.csv", "sudoku easy 2.csv", "sudoku easy 3.csv")
-                    file_number = random.randint(0, 2)
-                    file_handler = FileHandler(files[file_number])
-                    file_handler.open_file()
-                    file_handler.draw_rows(screen_handler.screen, theme)
-                    file_handler.close_file()
+                    menu_state = "game mode"
+                    draw_playing_field(easy_files)
+                # if medium button pressed
                 elif medium_mode.collide_point(position):
-                    pass
+                    menu_state = "game mode"
+                    draw_playing_field(medium_files)
+                # if hard button pressed
                 elif hard_mode.collide_point(position):
-                    pass
+                    menu_state = "game mode"
+                    draw_playing_field(hard_files)
                     
             # if in easy game mode 
-            elif menu_state == "easy mode":
+            elif menu_state == "game mode":
                 menu_state = "new game"
                 screen_handler.clear_screen(theme)
                 new_game_menu_title.change_theme(theme)

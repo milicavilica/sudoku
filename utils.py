@@ -13,4 +13,6 @@ LABEL_COLOR = (74, 2, 125)
 BUTTON_BG_COLOR = (218, 173, 247)
 BUTTON_HOVERED = (195, 118, 245)
 
-button_png_path = 'C:/Users/HP/python projects/Python_Final_Project/resources/back button.png'
+easy_files = ("sudoku easy 1.csv", "sudoku easy 2.csv", "sudoku easy 3.csv")
+medium_files = ("sudoku medium 1.csv", "sudoku medium 2.csv", "sudoku medium 3.csv")
+hard_files = ("sudoku hard 1.csv", "sudoku hard 2.csv", "sudoku hard 3.csv")

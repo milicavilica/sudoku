@@ -7,7 +7,7 @@ from utils import LABEL_COLOR, BLUE_LABEL
 class FileHandler:
     
     def __init__(self, file_name):
-        path = 'C:/Users/HP/python projects/Python_Final_Project/resources/'
+        path = 'C:/Users/HP/python projects/Final/resources/'
         path += file_name
         self.file_name = path
         self.file = None
