@@ -12,7 +12,6 @@ from game_logic import GameLogic
 
 pygame.init()
 
-
 # screen
 screen_handler = ScreenHandler(SCREEN_WIDTH, SCREEN_HEIGHT, "Pink Sudoku", BACKDROUND_COLOR)
 clock = pygame.time.Clock()
@@ -39,7 +38,6 @@ statistics_button.display_button(screen_handler.screen)
 pic_sudoku_button = Button("Picture Sudoku", def_font, 50, (115, 510), (270, 50))
 pic_sudoku_button.display_button(screen_handler.screen)
 main_menu_buttons = (new_game_button, continue_button, themes_button, statistics_button, pic_sudoku_button)
-
 
 # new game menu
 new_game_menu_title = Label("NEW GAME", def_font, 90, (85, 110))
@@ -84,6 +82,7 @@ def draw_playing_field(file):
 
 pygame.display.update()
 
+game_mode_entered = False
 run = True
 while run:
     # check which menu 
@@ -91,27 +90,30 @@ while run:
         main_title.display_label(screen_handler.screen)
         for button in main_menu_buttons:
             button.display_button(screen_handler.screen)
-
+    
     # check if in new game menu
     if menu_state == "new game":
         new_game_menu_title.display_label(screen_handler.screen)
         for button in new_game_buttons:
             button.display_button(screen_handler.screen)
-
+    
     #check if in game mode
-    if menu_state != "game mode":
-        seconds = 0
-        minutes = 0
-    else:
+    if menu_state == "game mode":
         if notes_on:
             notes.set_text("Notes Off")
         else: 
             notes.set_text("Notes On")
         for button in game_mode_buttons:
             button.display_button(screen_handler.screen)
-         
-        elapsed_time = clock.tick(60)  # This will return the time passed in milliseconds
-        seconds += elapsed_time / 1000  # Convert milliseconds to seconds
+        if not game_mode_entered:
+            start_time = pygame.time.get_ticks()
+            game_mode_entered = True
+
+        current_time = pygame.time.get_ticks()
+        elapsed_time = current_time - start_time
+        seconds = elapsed_time // 1000
+        minutes = seconds // 60
+        seconds %= 60
         if seconds >= 60:
             minutes += 1
             seconds = 0
@@ -123,6 +125,8 @@ while run:
         timer.set_text(timer_text)
         timer.display_label(screen_handler.screen)
         pygame.display.update()
+    else:
+        game_mode_entered = False
     
     # check if pop up message
     if menu_state == "pop up message":
