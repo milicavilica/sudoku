@@ -2,18 +2,19 @@ import pygame
 import csv
 from text_box import TextBox
 from button import Button
-from utils import LABEL_COLOR, BLUE_LABEL
+from utils import LABEL_COLOR, BLUE_LABEL, def_font
 
 class FileHandler:
     
     def __init__(self, file_name):
-        path = 'C:/Users/HP/python projects/Final/resources/'
-        path += file_name
-        self.file_name = path
+        self.file_name = file_name
         self.file = None
+        self.file_contents = None
         
     def open_file(self):
         self.file = open(self.file_name)
+        self.file_contents = self.file.read()
+        self.file.seek(0)
         self.reader = csv.reader(self.file)
     
     def close_file(self):
@@ -51,12 +52,12 @@ class FileHandler:
                 coordinates = (52 + (j*44), 52 + (i*44))
                 if element == "x":
                     #draw a text box
-                    t_box = TextBox(coordinates)
+                    t_box = TextBox(coordinates, (i, j))
                     t_box.draw(screen, theme)
                     text_boxes.append(t_box)
                 else:
                     #draw a button
-                    b_box = Button(element, "Oswald", 40, coordinates, (44, 44))
+                    b_box = Button(element, def_font, 40, coordinates, (44, 44))
                     b_box.change_theme(theme)
                     b_box.display_button(screen)
                     rect = pygame.Rect(coordinates[0], coordinates[1], 44, 44)

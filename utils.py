@@ -1,5 +1,8 @@
 SCREEN_WIDTH = 500
 SCREEN_HEIGHT = 600
+def_font = "Oswald"
+current_game_path = 'C:/Users/HP/python projects/Final/resources/current game.csv'
+continue_game_path = 'C:/Users/HP/python projects/Final/resources/continue game.csv'
 
 # color for blue theme
 BLUE_LABEL = (0,0,205)
@@ -15,6 +18,12 @@ BUTTON_BG_COLOR = (218, 173, 247)
 BUTTON_HOVERED = (195, 118, 245)
 SEL_SQUARE = (255,255,255)
 
-easy_files = ("sudoku easy 1.csv", "sudoku easy 2.csv", "sudoku easy 3.csv")
-medium_files = ("sudoku medium 1.csv", "sudoku medium 2.csv", "sudoku medium 3.csv")
-hard_files = ("sudoku hard 1.csv", "sudoku hard 2.csv", "sudoku hard 3.csv")
+easy_files = ('C:/Users/HP/python projects/Final/resources/sudoku easy 1.csv',
+              'C:/Users/HP/python projects/Final/resources/sudoku easy 2.csv',
+              'C:/Users/HP/python projects/Final/resources/sudoku easy 3.csv')
+medium_files = ('C:/Users/HP/python projects/Final/resources/sudoku medium 1.csv',
+                'C:/Users/HP/python projects/Final/resources/sudoku medium 2.csv',
+              'C:/Users/HP/python projects/Final/resources/sudoku medium 3.csv')
+hard_files = ('C:/Users/HP/python projects/Final/resources/sudoku hard 1.csv',
+                'C:/Users/HP/python projects/Final/resources/sudoku hard 2.csv',
+              'C:/Users/HP/python projects/Final/resources/sudoku hard 3.csv')

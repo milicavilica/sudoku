@@ -1,10 +1,11 @@
 import pygame
-from utils import BUTTON_BG_COLOR, BLUE_BUTTON_BG_COLOR
+from utils import BUTTON_BG_COLOR, BLUE_BUTTON_BG_COLOR, def_font
 
 class TextBox:
     
-    def __init__(self, coordinates):
+    def __init__(self, coordinates, grid_coordinates):
         self.coordinates = coordinates
+        self.grid_coordinates = grid_coordinates
         self.box = pygame.Rect(self.coordinates[0], self.coordinates[1], 44, 44)
         self.active = False
         self.text = ""
@@ -19,7 +20,7 @@ class TextBox:
         label_color = (0,0,0)
         pygame.draw.rect(screen, color, self.box)
         if self.text:
-            font = pygame.font.SysFont("Oswald", 40)
+            font = pygame.font.SysFont(def_font, 40)
             text_surface = font.render(self.text, True, label_color)
             text_rect = text_surface.get_rect(center=self.box.center)
             screen.blit(text_surface, text_rect)
@@ -28,7 +29,7 @@ class TextBox:
         
     def draw_notes(self, screen, theme):
         label_color = (105,105,105)
-        font = pygame.font.SysFont("Oswald", 20)
+        font = pygame.font.SysFont(def_font, 20)
         for note in self.notes:
             text_surface = font.render(note, True, label_color)
             text_rect = (0,0)
