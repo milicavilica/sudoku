@@ -175,7 +175,7 @@ while run:
                     for button in new_game_buttons:
                         button.change_theme(theme)
                 # if continue game button pressed
-                elif continue_button.collide_point(position): # TODO
+                elif continue_button.collide_point(position):
                     menu_state = "game mode"
                     game_logic_handler = draw_playing_field(continue_game_path)
                 #if change theme pressed
@@ -235,17 +235,23 @@ while run:
                 # if back is pressed
                 if back_to_new_game.collide_point(position):
                     menu_state = "pop up message"
+                    for button in pop_up_buttons:
+                        button.change_theme(theme)
                     screen_handler.pop_up_message(theme, "Save progress?", yes_b, no_b)
                 # if notes button is pressed
                 elif notes.collide_point(position):
                     notes_on = not notes_on
                     game_logic_handler.notes_switch(notes_on)
+                # if hint button is presssed
+                elif hint.collide_point(position):
+                    game_logic_handler.give_hint(screen_handler.screen, theme)
             elif menu_state == "pop up message":
-                if yes_b.collide_point(position):#TODO
+                if yes_b.collide_point(position):
                     with open(current_game_path, mode="r") as cur_file:
                         contents = cur_file.read()
                     with open(continue_game_path, mode="w") as cont_game:
                         cont_game.write(contents)
+                
                 menu_state = "new game"
                 screen_handler.clear_screen(theme)
                 new_game_menu_title.change_theme(theme)

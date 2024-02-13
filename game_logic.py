@@ -1,5 +1,6 @@
 import pygame
 import csv
+import random
 from utils import LABEL_COLOR, SEL_SQUARE, BLUE_LABEL
 
 class GameLogic:
@@ -9,6 +10,8 @@ class GameLogic:
         self.f_handler = f_handler
         self.notes_on = False
         self.current_game_path = current_game_path
+        self.rows = self.__extract_file()
+        
         
     def _select_text_box(self, box, screen, color):
         box.activate()
@@ -40,16 +43,86 @@ class GameLogic:
             writer = csv.writer(csv_file)
             writer.writerows(rows)
                 
+    def __extract_file(self):
+        with open(self.current_game_path, mode="r") as curr_file:
+            reader = csv.reader(curr_file)
+            rows = []
+            for row in reader:
+                rows.append(row)
+        return rows
+                
+    def __valid_digit(self, digit, grid_coordinates, rows):
+        digit_i = grid_coordinates[0]
+        digit_j = grid_coordinates[1]
+        for i in range(0, len(rows)):
+            for j in range(0, len(rows[i])):
+                if (i == digit_i and rows[i][j] == str(digit) or
+                    j == digit_j and rows[i][j] == str(digit)):
+                    return False
+        
+        startRow = digit_i - digit_i % 3
+        startCol = digit_j - digit_j % 3
+        for i in range(3):
+            for j in range(3):
+                if rows[i + startRow][j + startCol] == str(digit):
+                    return False
+                
+        return True
+           
+    def back_track(self, temp_rows, i, j):
+        if i == 8 and j == 9:
+            return True
+            
+        if j == 9:
+            i += 1
+            j = 0
+                
+        if temp_rows[i][j] != 'x':
+            return self.back_track(temp_rows,i,j+1)
+            
+        for num in range(1, 10):
+            if self.__valid_digit(num,(i, j), temp_rows):
+                temp_rows[i][j] = str(num)
+                if self.back_track(temp_rows, i, j + 1):
+                    return True
+            temp_rows[i][j] = 'x'
+        return False
+
+                
+    def give_hint(self, screen, theme):
+        temp_rows = [row[:] for row in self.rows]
+        empty_boxes = [box for box in self.text_boxes if box.text == ""]
+        box = random.choice(empty_boxes)
+        i, j = box.grid_coordinates
+        if self.back_track(temp_rows, 0, 0):
+            new_value = temp_rows[i][j]
+            self.rows[i][j] = new_value
+            self.update_current_game_file(new_value, (i, j))
+            box.text = str(new_value)
+            box.draw(screen, theme)
+            
+            self.update_current_game_file(box.text, box.grid_coordinates)
+            self.f_handler.draw_borders(screen, theme)
+            
+        else:
+            print("back tracking was false") # pop up "No solution this puzzle right now"
+        
+             
     def handle_input(self, event, screen, theme):
+        
         for box in self.text_boxes:
             if event.type == pygame.KEYDOWN and box.is_active():
                 if not self.notes_on:
                     if event.key == pygame.K_BACKSPACE:
                         # Handle backspace key
                         box.text = box.text[:-1]
-                    elif event.unicode.isdigit() and (int(event.unicode) != 0) and not box.text:
-                        # Append the pressed key to the text #####################################check game logic
-                        box.text += event.unicode
+                    elif event.unicode.isdigit() and (int(event.unicode) != 0):
+                        # Append the pressed key to the text 
+                        if self.__valid_digit(event.unicode, box.grid_coordinates, self.rows):
+                            box.text = event.unicode
+                            self.rows[box.grid_coordinates[0]][box.grid_coordinates[1]] = box.text
+                        else:
+                            pass # flash in red for a little bit?
                     box.draw(screen, theme)
                     self.update_current_game_file(box.text, box.grid_coordinates)
                     self.f_handler.draw_borders(screen, theme)

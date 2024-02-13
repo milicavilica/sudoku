@@ -20,7 +20,7 @@ class FileHandler:
     def close_file(self):
         self.file.close()
         
-    def _get_rows(self):
+    def get_rows(self):
         rows = []
         for row in self.reader:
             rows.append(row)
@@ -42,7 +42,7 @@ class FileHandler:
         pygame.display.update()
     
     def draw_rows(self, screen, theme):
-        rows = self._get_rows()
+        rows = self.get_rows()
         color = LABEL_COLOR if theme == "pink" else BLUE_LABEL
         text_boxes = []
         
