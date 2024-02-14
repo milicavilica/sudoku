@@ -1,3 +1,5 @@
+import sqlite3
+
 SCREEN_WIDTH = 500
 SCREEN_HEIGHT = 600
 def_font = "Oswald"
@@ -27,3 +29,14 @@ medium_files = ('C:/Users/HP/python projects/Final/resources/sudoku medium 1.csv
 hard_files = ('C:/Users/HP/python projects/Final/resources/sudoku hard 1.csv',
                 'C:/Users/HP/python projects/Final/resources/sudoku hard 2.csv',
               'C:/Users/HP/python projects/Final/resources/sudoku hard 3.csv')
+
+
+# db
+conn = sqlite3.connect('stats.db')
+cursor = conn.cursor()
+cursor.execute("CREATE TABLE IF NOT EXISTS game_data (id INTEGER PRIMARY KEY,mode VARCHAR,hints INTEGER, mistakes INTEGER, time INTEGER)")
+conn.commit()
+cursor.execute("SELECT MAX(id) FROM game_data")
+res = cursor.fetchall()
+game_id = res[0][0] if res[0][0] else 1
+conn.close()

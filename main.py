@@ -1,12 +1,13 @@
 import pygame
 import random
+import sqlite3
 
 from button import Button
 from label import Label
 from screen import ScreenHandler
 from utils import (SCREEN_WIDTH, SCREEN_HEIGHT, BACKDROUND_COLOR,
                    easy_files, medium_files, hard_files, def_font,
-                   current_game_path, continue_game_path)
+                   current_game_path, continue_game_path, game_id)
 from file_handler import FileHandler
 from game_logic import GameLogic
 
@@ -34,10 +35,7 @@ themes_button.display_button(screen_handler.screen)
 # statistics button
 statistics_button = Button("Statistics", def_font, 50, (115, 440), (270, 50))
 statistics_button.display_button(screen_handler.screen)
-# picture sudoku button
-pic_sudoku_button = Button("Picture Sudoku", def_font, 50, (115, 510), (270, 50))
-pic_sudoku_button.display_button(screen_handler.screen)
-main_menu_buttons = (new_game_button, continue_button, themes_button, statistics_button, pic_sudoku_button)
+main_menu_buttons = (new_game_button, continue_button, themes_button, statistics_button)
 
 # new game menu
 new_game_menu_title = Label("NEW GAME", def_font, 90, (85, 110))
@@ -59,9 +57,19 @@ yes_b = Button("Yes", def_font, 50 ,(140, 300), (100, 50))
 no_b = Button("No", def_font, 50 ,(260, 300), (100, 50))
 pop_up_buttons = (yes_b, no_b)
 
+def create_new_row():
+    conn = sqlite3.connect('stats.db')
+    cursor = conn.cursor()
+    command = "INSERT INTO game_data (id, mode) VALUES ({}, '{}');".format(game_id, game_mode)
+    cursor.execute(command)
+    conn.commit()
+    conn.close()
+
 # game modes
 menu_state = "main"
 theme = "pink"
+game_mode = None
+
 
 # game logic handler
 game_logic_handler = None
@@ -200,9 +208,6 @@ while run:
                 # if statistics pressed                
                 elif statistics_button.collide_point(position): # TODO
                     print("statistics_button clicked")
-                # if picture sdoku pressed
-                elif pic_sudoku_button.collide_point(position): # TODO
-                    print("pic_sudoku_button clicked")
                     
             # if in new game menu
             elif menu_state == "new game":
@@ -216,16 +221,25 @@ while run:
                 # if easy button pressed
                 elif easy_mode.collide_point(position):
                     menu_state = "game mode"
+                    game_mode = "easy_mode"
+                    game_id += 1
+                    create_new_row()
                     file_num = random.randint(0,2)
                     game_logic_handler = draw_playing_field(easy_files[file_num])
                 # if medium button pressed
                 elif medium_mode.collide_point(position):
                     menu_state = "game mode"
+                    game_mode = "medium_mode"
+                    game_id += 1
+                    create_new_row()
                     file_num = random.randint(0,2)
                     game_logic_handler = draw_playing_field(medium_files[file_num])
                 # if hard button pressed
                 elif hard_mode.collide_point(position):
                     menu_state = "game mode"
+                    game_mode = "hard_mode"
+                    game_id += 1
+                    create_new_row()
                     file_num = random.randint(0,2)
                     game_logic_handler = draw_playing_field(hard_files[file_num])
                     
@@ -238,6 +252,9 @@ while run:
                     for button in pop_up_buttons:
                         button.change_theme(theme)
                     screen_handler.pop_up_message(theme, "Save progress?", yes_b, no_b)
+                    time_played = minutes*60 + seconds
+                    conn = sqlite3.connect('stats.db')
+                    game_logic_handler.fill_table(game_id, time_played, conn)
                 # if notes button is pressed
                 elif notes.collide_point(position):
                     notes_on = not notes_on

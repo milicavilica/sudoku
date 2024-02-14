@@ -10,6 +10,8 @@ class GameLogic:
         self.f_handler = f_handler
         self.notes_on = False
         self.current_game_path = current_game_path
+        self.hint_count = 0
+        self.mistakes = 0
         self.rows = self.__extract_file()
         
         
@@ -87,9 +89,9 @@ class GameLogic:
                     return True
             temp_rows[i][j] = 'x'
         return False
-
                 
     def give_hint(self, screen, theme):
+        self.hint_count += 1
         temp_rows = [row[:] for row in self.rows]
         empty_boxes = [box for box in self.text_boxes if box.text == ""]
         box = random.choice(empty_boxes)
@@ -109,7 +111,6 @@ class GameLogic:
         
              
     def handle_input(self, event, screen, theme):
-        
         for box in self.text_boxes:
             if event.type == pygame.KEYDOWN and box.is_active():
                 if not self.notes_on:
@@ -122,7 +123,7 @@ class GameLogic:
                             box.text = event.unicode
                             self.rows[box.grid_coordinates[0]][box.grid_coordinates[1]] = box.text
                         else:
-                            pass # flash in red for a little bit?
+                            self.mistakes += 1
                     box.draw(screen, theme)
                     self.update_current_game_file(box.text, box.grid_coordinates)
                     self.f_handler.draw_borders(screen, theme)
@@ -138,3 +139,10 @@ class GameLogic:
                         # Append the pressed key to the text
                         box.notes.append(event.unicode)
                         box.draw_notes(screen, theme)
+                        
+    def fill_table(self, game_id, time, conn):
+        cursor = conn.cursor()
+        command = "UPDATE game_data SET hints = {h}, mistakes = {m}, time = {t} WHERE id = {id}".format(h=self.hint_count, m=self.mistakes, t=time, id=game_id)
+        cursor.execute(command)
+        conn.commit()
+        conn.close()
