@@ -12,6 +12,7 @@ class GameLogic:
         self.current_game_path = current_game_path
         self.hint_count = 0
         self.mistakes = 0
+        self.completed = False
         self.rows = self.__extract_file()
         
         
@@ -94,20 +95,23 @@ class GameLogic:
         self.hint_count += 1
         temp_rows = [row[:] for row in self.rows]
         empty_boxes = [box for box in self.text_boxes if box.text == ""]
-        box = random.choice(empty_boxes)
-        i, j = box.grid_coordinates
-        if self.back_track(temp_rows, 0, 0):
-            new_value = temp_rows[i][j]
-            self.rows[i][j] = new_value
-            self.update_current_game_file(new_value, (i, j))
-            box.text = str(new_value)
-            box.draw(screen, theme)
-            
-            self.update_current_game_file(box.text, box.grid_coordinates)
-            self.f_handler.draw_borders(screen, theme)
-            
+        if len(empty_boxes) == 0:
+            self.completed = True
         else:
-            print("back tracking was false") # pop up "No solution this puzzle right now"
+            box = random.choice(empty_boxes)
+            i, j = box.grid_coordinates
+            if self.back_track(temp_rows, 0, 0):
+                new_value = temp_rows[i][j]
+                self.rows[i][j] = new_value
+                self.update_current_game_file(new_value, (i, j))
+                box.text = str(new_value)
+                box.draw(screen, theme)
+                
+                self.update_current_game_file(box.text, box.grid_coordinates)
+                self.f_handler.draw_borders(screen, theme)
+                
+            else:
+                print("back tracking was false") # pop up "No solution this puzzle right now"
         
              
     def handle_input(self, event, screen, theme):
@@ -128,6 +132,7 @@ class GameLogic:
                     self.update_current_game_file(box.text, box.grid_coordinates)
                     self.f_handler.draw_borders(screen, theme)
                     box.deactivate()
+                    
                 else:
                     if event.key == pygame.K_BACKSPACE:
                         # Handle backspace key
@@ -139,10 +144,13 @@ class GameLogic:
                         # Append the pressed key to the text
                         box.notes.append(event.unicode)
                         box.draw_notes(screen, theme)
+        empty_boxes = [box for box in self.text_boxes if box.text == ""]
+        if not len(empty_boxes):
+            self.completed = True
                         
     def fill_table(self, game_id, time, conn):
         cursor = conn.cursor()
-        command = "UPDATE game_data SET hints = {h}, mistakes = {m}, time = {t} WHERE id = {id}".format(h=self.hint_count, m=self.mistakes, t=time, id=game_id)
+        command = "UPDATE game_data SET hints = {h}, mistakes = {m}, time = {t}, completed = {c} WHERE id = {id}".format(h=self.hint_count, m=self.mistakes, t=time, c=self.completed, id=game_id)
         cursor.execute(command)
         conn.commit()
         conn.close()

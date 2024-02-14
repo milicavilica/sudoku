@@ -10,6 +10,7 @@ from utils import (SCREEN_WIDTH, SCREEN_HEIGHT, BACKDROUND_COLOR,
                    current_game_path, continue_game_path, game_id)
 from file_handler import FileHandler
 from game_logic import GameLogic
+from stats_handler import StatsHandler
 
 pygame.init()
 
@@ -24,16 +25,16 @@ timer = Label("", def_font, 25, (52, 20))
 main_title = Label("SUDOKU", def_font, 100, (105, 110))
 main_title.display_label(screen_handler.screen)
 # new game button
-new_game_button = Button("New Game", def_font, 50, (115, 230), (270, 50))
+new_game_button = Button("New Game", def_font, 50, (115, 250), (270, 50))
 new_game_button.display_button(screen_handler.screen)
 # continue game
-continue_button = Button("Continue Game", def_font, 50, (115, 300), (270, 50))
+continue_button = Button("Continue Game", def_font, 50, (115, 320), (270, 50))
 continue_button.display_button(screen_handler.screen)
 # themes button
-themes_button = Button("Change theme", def_font, 50, (115, 370), (270, 50))
+themes_button = Button("Change theme", def_font, 50, (115, 390), (270, 50))
 themes_button.display_button(screen_handler.screen)
 # statistics button
-statistics_button = Button("Statistics", def_font, 50, (115, 440), (270, 50))
+statistics_button = Button("Statistics", def_font, 50, (115, 460), (270, 50))
 statistics_button.display_button(screen_handler.screen)
 main_menu_buttons = (new_game_button, continue_button, themes_button, statistics_button)
 
@@ -57,6 +58,16 @@ yes_b = Button("Yes", def_font, 50 ,(140, 300), (100, 50))
 no_b = Button("No", def_font, 50 ,(260, 300), (100, 50))
 pop_up_buttons = (yes_b, no_b)
 
+#statistics
+statistics_title = Label("STATISTICS", def_font, 80, (90, 110))
+stats_labels = (statistics_title,)
+back_to_main_menu = Button("Back", def_font, 40, (90, 500), (100, 60))
+stats_buttons = (back_to_main_menu,)
+
+
+# win pop up
+win_ok_button = Button("ok", def_font, 50, (210, 300), (80, 60))
+win_buttons = (win_ok_button,)
 def create_new_row():
     conn = sqlite3.connect('stats.db')
     cursor = conn.cursor()
@@ -107,6 +118,16 @@ while run:
     
     #check if in game mode
     if menu_state == "game mode":
+        empty_boxes = [box for box in game_logic_handler.text_boxes if box.text == ""]
+        if not len(empty_boxes):
+            game_logic_handler.completed = True
+        if game_logic_handler.completed:
+            menu_state = "win"
+            win_ok_button.change_theme(theme)
+            screen_handler.pop_up_message(theme, "Congratulations!", win_buttons)
+            time_played = minutes*60 + seconds
+            conn = sqlite3.connect('stats.db')
+            game_logic_handler.fill_table(game_id, time_played, conn)
         if notes_on:
             notes.set_text("Notes Off")
         else: 
@@ -136,10 +157,23 @@ while run:
     else:
         game_mode_entered = False
     
+    # check if win pop up
+    if menu_state == "win":
+        for button in win_buttons:
+            button.display_button(screen_handler.screen)
+    
     # check if pop up message
     if menu_state == "pop up message":
         for button in pop_up_buttons:
             button.display_button(screen_handler.screen)
+    
+    # check if in stats menu
+    if menu_state == "stats":
+        for label in stats_labels:
+            label.display_label(screen_handler.screen)
+        for button in stats_buttons:
+            button.display_button(screen_handler.screen)
+    
     # check events
     for event in pygame.event.get():
         #check if exit button is pressed
@@ -168,6 +202,16 @@ while run:
             elif menu_state == "pop up message":
                 for button in pop_up_buttons:
                     button.change_background(button.collide_point(position))
+                    
+            # check if win pop up
+            elif menu_state == "win":
+                for button in win_buttons:
+                    button.change_background(button.collide_point(position))
+                
+            # check if in stats menu
+            elif menu_state == "stats":
+                for button in stats_buttons:
+                    button.change_background(button.collide_point(position))
                 
         # check if a button is pressed
         elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -182,6 +226,7 @@ while run:
                     new_game_menu_title.change_theme(theme)
                     for button in new_game_buttons:
                         button.change_theme(theme)
+                
                 # if continue game button pressed
                 elif continue_button.collide_point(position):
                     menu_state = "game mode"
@@ -206,8 +251,16 @@ while run:
                                 mm_button.change_theme(theme)
                         pygame.display.set_caption("Pink Sudoku")
                 # if statistics pressed                
-                elif statistics_button.collide_point(position): # TODO
-                    print("statistics_button clicked")
+                elif statistics_button.collide_point(position):
+                    menu_state = "stats"
+                    screen_handler.clear_screen(theme)
+                    for label in stats_labels:
+                        label.change_theme(theme)
+                    for button in stats_buttons:
+                        button.change_theme(theme)
+                    conn = sqlite3.connect('stats.db')
+                    stats_handler = StatsHandler()
+                    stats_handler.show_stats(conn, screen_handler.screen, theme)
                     
             # if in new game menu
             elif menu_state == "new game":
@@ -215,9 +268,6 @@ while run:
                 if back_button.collide_point(position):
                     menu_state = "main"
                     screen_handler.clear_screen(theme)
-                    new_game_menu_title.change_theme(theme)
-                    for button in new_game_buttons:
-                        button.change_theme(theme)
                 # if easy button pressed
                 elif easy_mode.collide_point(position):
                     menu_state = "game mode"
@@ -251,7 +301,7 @@ while run:
                     menu_state = "pop up message"
                     for button in pop_up_buttons:
                         button.change_theme(theme)
-                    screen_handler.pop_up_message(theme, "Save progress?", yes_b, no_b)
+                    screen_handler.pop_up_message(theme, "Save progress?", pop_up_buttons)
                     time_played = minutes*60 + seconds
                     conn = sqlite3.connect('stats.db')
                     game_logic_handler.fill_table(game_id, time_played, conn)
@@ -262,6 +312,8 @@ while run:
                 # if hint button is presssed
                 elif hint.collide_point(position):
                     game_logic_handler.give_hint(screen_handler.screen, theme)
+            
+            # if pop up message 
             elif menu_state == "pop up message":
                 if yes_b.collide_point(position):
                     with open(current_game_path, mode="r") as cur_file:
@@ -274,6 +326,22 @@ while run:
                 new_game_menu_title.change_theme(theme)
                 for button in new_game_buttons:
                     button.change_theme(theme)
+                    
+            # if win pop up
+            elif menu_state == "win":
+                if win_ok_button.collide_point(position):
+                    menu_state = "main"
+                    screen_handler.clear_screen(theme)
+                    main_title.change_theme(theme)
+                    for button in main_menu_buttons:
+                        button.change_theme(theme)
+                    
+            # if in stats menu
+            elif menu_state == "stats":
+                # if back to main button pressed
+                if back_to_main_menu.collide_point(position):
+                    menu_state = "main"
+                    screen_handler.clear_screen(theme)
         # check if a key has been pressed
         elif event.type == pygame.KEYDOWN:
             if menu_state == "game mode":

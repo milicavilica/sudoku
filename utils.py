@@ -34,7 +34,7 @@ hard_files = ('C:/Users/HP/python projects/Final/resources/sudoku hard 1.csv',
 # db
 conn = sqlite3.connect('stats.db')
 cursor = conn.cursor()
-cursor.execute("CREATE TABLE IF NOT EXISTS game_data (id INTEGER PRIMARY KEY,mode VARCHAR,hints INTEGER, mistakes INTEGER, time INTEGER)")
+cursor.execute("CREATE TABLE IF NOT EXISTS game_data (id INTEGER PRIMARY KEY,mode VARCHAR,hints INTEGER, mistakes INTEGER, time INTEGER, completed BOOL)")
 conn.commit()
 cursor.execute("SELECT MAX(id) FROM game_data")
 res = cursor.fetchall()

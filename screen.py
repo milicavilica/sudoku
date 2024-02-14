@@ -20,19 +20,21 @@ class ScreenHandler:
             self.screen.fill(self.background_color)
             self._initialized = True
         
-    def pop_up_message(self, theme, message_text, yes_button, no_button):
+    def pop_up_message(self, theme, message_text, buttons):
         width = 300
         height = 300
         x,y = (100, 100)
         
+        
         font = pygame.font.SysFont(def_font, 40)
         color = LABEL_COLOR if theme == "pink" else BLUE_LABEL
         text = font.render(message_text,True, color)
+        text_x = x + (width - text.get_width()) // 2
         color = BACKDROUND_COLOR if theme == "pink" else BLUE_BG_COLOR
         pygame.draw.rect(self.screen, color, (x, y, width, height))
-        self.screen.blit(text, (150, 200))
-        yes_button.display_button(self.screen)
-        no_button.display_button(self.screen)
+        self.screen.blit(text, (text_x, 200))
+        for button in buttons:
+            button.display_button(self.screen)
     
     def clear_rect(self, color, dimensions, coordinates):
         self.background_color = BACKDROUND_COLOR if color == "pink" else BLUE_BG_COLOR
