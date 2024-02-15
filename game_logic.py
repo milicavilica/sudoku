@@ -141,9 +141,14 @@ class GameLogic:
                         self.f_handler.draw_borders(screen, theme)
                         box.deactivate()
                     elif event.unicode.isdigit() and (int(event.unicode) != 0):
-                        # Append the pressed key to the text
-                        box.notes.append(event.unicode)
+                        # Append the pressed key to notes
+                        if event.unicode not in box.notes:
+                            box.notes.append(event.unicode)
+                        else:
+                            box.notes.remove(event.unicode)
                         box.draw_notes(screen, theme)
+                        self._select_text_box(box,screen, SEL_SQUARE)
+                            
         empty_boxes = [box for box in self.text_boxes if box.text == ""]
         if not len(empty_boxes):
             self.completed = True

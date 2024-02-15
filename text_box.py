@@ -30,6 +30,10 @@ class TextBox:
     def draw_notes(self, screen, theme):
         label_color = (105,105,105)
         font = pygame.font.SysFont(def_font, 20)
+        color = BUTTON_BG_COLOR if theme == "pink" else BLUE_BUTTON_BG_COLOR
+        new_x = self.coordinates[0] + 2
+        new_y = self.coordinates[1] + 2
+        screen.fill(color, pygame.Rect(new_x, new_y, 40, 40))
         for note in self.notes:
             text_surface = font.render(note, True, label_color)
             text_rect = (0,0)

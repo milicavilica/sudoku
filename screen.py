@@ -32,7 +32,6 @@ class ScreenHandler:
         color = BACKDROUND_COLOR if theme == "pink" else BLUE_BG_COLOR
         pygame.draw.rect(self.screen, color, (x, y, width, height))
         self.screen.blit(text, (text_x, 200))
-        print(self.screen.get_at((text_x + 5, 200)) == LABEL_COLOR)
         for button in buttons:
             button.display_button(self.screen)
     
