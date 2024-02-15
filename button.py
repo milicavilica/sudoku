@@ -24,6 +24,7 @@ class Button:
     def set_text(self, new_name):
         color = LABEL_COLOR if self.background_hovered == BUTTON_HOVERED else BLUE_LABEL
         self.text = self.font.render(new_name, True, color)
+        self.name = new_name
     
     def change_background(self, hovered):
         if hovered:

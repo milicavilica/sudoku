@@ -25,7 +25,6 @@ class ScreenHandler:
         height = 300
         x,y = (100, 100)
         
-        
         font = pygame.font.SysFont(def_font, 40)
         color = LABEL_COLOR if theme == "pink" else BLUE_LABEL
         text = font.render(message_text,True, color)
@@ -33,6 +32,7 @@ class ScreenHandler:
         color = BACKDROUND_COLOR if theme == "pink" else BLUE_BG_COLOR
         pygame.draw.rect(self.screen, color, (x, y, width, height))
         self.screen.blit(text, (text_x, 200))
+        print(self.screen.get_at((text_x + 5, 200)) == LABEL_COLOR)
         for button in buttons:
             button.display_button(self.screen)
     
@@ -46,6 +46,6 @@ class ScreenHandler:
         self.background_color = BACKDROUND_COLOR if color == "pink" else BLUE_BG_COLOR
         self.screen.fill(self.background_color)
         pygame.display.update()
-
+        
     
     

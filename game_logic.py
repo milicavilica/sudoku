@@ -118,7 +118,7 @@ class GameLogic:
         for box in self.text_boxes:
             if event.type == pygame.KEYDOWN and box.is_active():
                 if not self.notes_on:
-                    if event.key == pygame.K_BACKSPACE:
+                    if hasattr(event, 'key') and event.key == pygame.K_BACKSPACE:
                         # Handle backspace key
                         box.text = box.text[:-1]
                     elif event.unicode.isdigit() and (int(event.unicode) != 0):
@@ -134,7 +134,7 @@ class GameLogic:
                     box.deactivate()
                     
                 else:
-                    if event.key == pygame.K_BACKSPACE:
+                    if hasattr(event, 'key') and event.key == pygame.K_BACKSPACE:
                         # Handle backspace key
                         box.notes = []
                         box.draw(screen, theme)
